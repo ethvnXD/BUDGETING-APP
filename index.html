@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eef4ff">
+  <title>My Budget</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <div>
+        <p class="eyebrow">Personal budget</p>
+        <h1>My Budget</h1>
+        <p class="subhead">Keep paychecks, bills, and savings in one place.</p>
+      </div>
+      <div class="header-actions">
+        <button class="button secondary" id="exportButton" type="button">Export data</button>
+        <button class="button" id="addPaycheckButton" type="button">Add paycheck</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="summary-grid" aria-label="Monthly summary">
+        <article class="summary-card">
+          <span>Take-home income</span>
+          <strong id="incomeTotal">$0.00</strong>
+          <small id="paycheckCount">0 paychecks this month</small>
+        </article>
+        <article class="summary-card">
+          <span>Bills and spending</span>
+          <strong id="billTotal">$0.00</strong>
+          <small id="billCount">0 bills this month</small>
+        </article>
+        <article class="summary-card">
+          <span>Available after bills</span>
+          <strong id="availableTotal">$0.00</strong>
+          <small>Income minus this month's bills</small>
+        </article>
+        <article class="summary-card">
+          <span>Savings tracked</span>
+          <strong id="savingsTotal">$0.00</strong>
+          <small id="goalCount">0 active goals</small>
+        </article>
+      </section>
+
+      <section class="two-column">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">This month</p>
+              <h2>Paychecks</h2>
+            </div>
+            <button class="text-button" id="addPaycheckInline" type="button">+ Add</button>
+          </div>
+          <div id="paycheckList" class="list"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Plan ahead</p>
+              <h2>Bills</h2>
+            </div>
+            <button class="text-button" id="addBillButton" type="button">+ Add</button>
+          </div>
+          <div id="billList" class="list"></div>
+        </article>
+      </section>
+
+      <section class="two-column lower-grid">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Payroll</p>
+              <h2>Bring in your pay</h2>
+            </div>
+          </div>
+          <p class="panel-copy">
+            Add take-home pay manually, import a payroll CSV, or prepare a secure payroll connection for services such as ADP, Paycom, Workday, Gusto, and UKG.
+          </p>
+          <div class="payroll-actions">
+            <button class="button" id="linkPayrollButton" type="button">Link paycheck</button>
+            <label class="button secondary file-button">
+              Import CSV
+              <input id="csvInput" type="file" accept=".csv,text/csv">
+            </label>
+          </div>
+          <div id="payrollStatus" class="status-note" role="status"></div>
+          <p class="fine-print">
+            Direct payroll sign-in needs a secure server-side connection provider. This site never asks for or stores your payroll password.
+          </p>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Goals</p>
+              <h2>Savings</h2>
+            </div>
+            <button class="text-button" id="addGoalButton" type="button">+ Add</button>
+          </div>
+          <div id="goalList" class="goal-list"></div>
+        </article>
+      </section>
+
+      <section class="panel data-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Your data</p>
+            <h2>Backup and restore</h2>
+          </div>
+        </div>
+        <p class="panel-copy">
+          Your budget is stored in this browser only. Export a backup if you want to move it to another phone or computer.
+        </p>
+        <div class="data-actions">
+          <button class="button secondary" id="importButton" type="button">Import backup</button>
+          <input id="backupInput" type="file" accept=".json,application/json" hidden>
+          <button class="text-button danger" id="clearButton" type="button">Clear all data</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="entryDialog">
+    <form method="dialog" id="entryForm">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow" id="dialogEyebrow">Add item</p>
+          <h2 id="dialogTitle">Add paycheck</h2>
+        </div>
+        <button class="icon-button" value="cancel" aria-label="Close">×</button>
+      </div>
+      <div id="formFields"></div>
+      <div class="dialog-actions">
+        <button class="button secondary" value="cancel" type="button" id="cancelDialog">Cancel</button>
+        <button class="button" value="default" type="submit">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="payrollDialog">
+    <form method="dialog">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow">Payroll connection</p>
+          <h2>Link a paycheck source</h2>
+        </div>
+        <button class="icon-button" value="cancel" aria-label="Close">×</button>
+      </div>
+
+      <div class="provider-grid" id="providerGrid">
+        <button class="provider-card" type="button" data-provider="ADP"><strong>ADP</strong><span>Payroll and pay statements</span></button>
+        <button class="provider-card" type="button" data-provider="Paycom"><strong>Paycom</strong><span>Employee self-service payroll</span></button>
+        <button class="provider-card" type="button" data-provider="Workday"><strong>Workday</strong><span>Pay and employer information</span></button>
+        <button class="provider-card" type="button" data-provider="Gusto"><strong>Gusto</strong><span>Payroll and earnings history</span></button>
+        <button class="provider-card" type="button" data-provider="UKG"><strong>UKG</strong><span>Payroll and workforce data</span></button>
+      </div>
+
+      <div id="providerMessage" class="connection-message" hidden></div>
+
+      <div class="dialog-actions">
+        <button class="button secondary" value="cancel" type="submit">Close</button>
+      </div>
+    </form>
+  </dialog>
+
+  <template id="emptyTemplate">
+    <div class="empty-state">
+      <strong>Nothing here yet</strong>
+      <span>Add your first item to get started.</span>
+    </div>
+  </template>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>
